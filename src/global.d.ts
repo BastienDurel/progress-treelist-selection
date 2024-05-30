@@ -1,3 +1,9 @@
+type Nullable<T> = T | undefined | null;
+type DataListOf<T> = {
+  total: number,
+  data: T[]
+};
+type DataList = DataListOf<any>;
 
 interface PdvFilter {
     id?: number;

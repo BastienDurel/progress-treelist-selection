@@ -20,23 +20,9 @@
             type="button"
             size="small"
             shape="square"
-            :svg-icon="chevronLeftIcon"
-            title="Page précédente"
-            @click="router.back"
-          />
-          <Button
-            type="button"
-            :svg-icon="gridLayoutIcon"
-            shape="square"
-            @click="router.push({ name: 'Commandes' })"
-          />
-          <Button
-            type="button"
-            size="small"
-            shape="square"
             :svg-icon="filterClearIcon"
             title="Effacer les filtres"
-            @click="state.clearFilters"
+            @click="state.filters = {}"
           />
           <Button
             v-if="DEBUG"
@@ -108,19 +94,24 @@
 </template>
 
 <script lang="ts">
-import { arrowRotateCwIcon, chevronLeftIcon, filterClearIcon, pauseIcon, gridLayoutIcon } from "@progress/kendo-svg-icons";
+import { arrowRotateCwIcon, filterClearIcon, pauseIcon } from "@progress/kendo-svg-icons";
 import { StackLayout } from "@progress/kendo-vue-layout";
 import { Button, ButtonGroup, Toolbar, ToolbarSpacer } from "@progress/kendo-vue-buttons";
 import { TreeList, TreeListHeaderSelectionChangeEvent } from '@progress/kendo-vue-treelist';
 import { SortDescriptor } from "@progress/kendo-data-query";
 import { TreeListColumnPropsT, getPdvFilters, mergeGridColumns } from "../components/grid";
+import { DataListOf, GridStateStore, PdvT } from "../global";
 const DEBUG = !!import.meta.env.VITE_DEBUG;
-const state = {
+const state: GridStateStore = {
   skip: 0,
   take: 10,
   reorderable: true,
   sortable: true,
-  clearFilters: () => true
+  resizable: true,
+  columns: [],
+  total: 0,
+  filters: {},
+  key: 0,
 }
 const sort = ref<SortDescriptor[]>([]);
 const data = ref<PdvT[]>();
@@ -152,10 +143,8 @@ function foo(e: TreeListHeaderSelectionChangeEvent) {
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { useWindowSize } from "vue-window-size";
 import $http from '../api.ts';
-const router = useRouter();
 const { height } = useWindowSize();
 const loader = ref(false);
 onMounted(refreshData);
@@ -166,18 +155,13 @@ function refreshData() {
             return false;
     }
     const filters = getPdvFilters(state);
-    const filtersHash = hash(filters);
-    if (state.filtersHash != filtersHash) {
-        state.filtersHash = filtersHash;
-        state.skip = 0;
-    }
     // Only actives cmds by default
     if (sort.value && sort.value.length > 0) {
         filters.sort = sort.value.map(s => { return { field: s.field, direction: s.dir } });
     }
     const config = {
-        method: 'post',
-        url: '/Pdv/Internes',
+        method: 'get',
+        url: '/_data/treelist.json',
         params: {
             skip: state.skip,
             count: state.take,
@@ -189,7 +173,7 @@ function refreshData() {
         data.value = [];
         data.value = val.data.data;
         state.total = val.data.total;
-    }).catch(catchNotif).finally(() => loader.value = false);
+    }).finally(() => loader.value = false);
 }
 function getGridTop(): number {
     const g = document.getElementById("pdv-grid");

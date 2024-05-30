@@ -2,6 +2,8 @@ import { GridColumnProps } from '@progress/kendo-vue-grid';
 import { TreeListColumnProps } from '@progress/kendo-vue-treelist';
 import { ColumnBaseProps } from '@progress/kendo-vue-data-tools';
 
+import { GridStateStore, PdvFilter } from '../global';
+
 interface ColType extends ColumnBaseProps {
     hidden?: boolean;
 }
@@ -63,8 +65,6 @@ export function getPdvFilters(state: GridStateStore): PdvFilter {
     console.log(state.filters);
     if (state.filters.pdvId)
         filters.id = state.filters.pdvId;
-    if (state.filters.pdvDenom)
-        filters.nom = state.filters.pdvDenom.text;
     if (state.filters.pdvNom)
         filters.nom = state.filters.pdvNom;
     if (state.filters.pdvEnseigne)
@@ -72,16 +72,10 @@ export function getPdvFilters(state: GridStateStore): PdvFilter {
     if (state.filters.pdvActif !== undefined && state.filters.pdvActif !== null)
         filters.actif = !!state.filters.pdvActif;
     if (state.filters.pdvAddress)
-        filters.adresse = state.filters.pdvAddress
+        filters.adresse = state.filters.pdvAddress;
     if (state.filters.pdvCP)
-        filters.cp = state.filters.pdvCP
-    if (state.filters.pdvCommune)
-        filters.ville = state.filters.pdvCommune
+        filters.cp = state.filters.pdvCP;
     if (state.filters.pdvClient)
-        filters.client = state.filters.pdvClient
-    if (state.filters.pdvRegion && state.filters.pdvRegion.length > 0)
-        filters.regions = state.filters.pdvRegion.map(x => x.id);
-    if (state.filters.pdvDept && state.filters.pdvDept.length > 0)
-        filters.departements = state.filters.pdvDept.map(x => x.id);
+        filters.client = state.filters.pdvClient;
     return filters;
 }
