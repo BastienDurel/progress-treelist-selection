@@ -59,6 +59,8 @@
       :columns="cols()"
       :data-items="data"
       :style="{ 'maxHeight': `${height - getGridTop()}px` }"
+      :resizable="state.resizable"
+      :sort="sort"
       :reorderable="state.reorderable"
       :sortable="state.sortable"
       :pageable="{
@@ -69,7 +71,8 @@
       }"
       :skip="state.skip"
       :take="state.take"
-      :sort="sort"
+      :total="state.total"
+      :page-size="state.take"
       :selected-field="SELECTED_FIELD"
       :expand-field="EXPAND_FIELD"
       :sub-items-field="SUB_ITEMS_FIELD"
