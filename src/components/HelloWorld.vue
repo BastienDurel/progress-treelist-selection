@@ -63,16 +63,6 @@
       :sort="sort"
       :reorderable="state.reorderable"
       :sortable="state.sortable"
-      :pageable="{
-        info: true,
-        pageSizes: [10, 15, 20, 50, 100],
-        pageSizeValue: state.take,
-        buttonCount: 10,
-      }"
-      :skip="state.skip"
-      :take="state.take"
-      :total="state.total"
-      :page-size="state.take"
       :selected-field="SELECTED_FIELD"
       :expand-field="EXPAND_FIELD"
       :sub-items-field="SUB_ITEMS_FIELD"
@@ -93,6 +83,17 @@
         </td>
       </template>
     </TreeList>
+    <Pager 
+      :skip="state.skip" 
+      :take="state.take" 
+      :total="state.total" 
+      :button-count="10" 
+      :info="true"
+      :page-sizes="[10, 15, 20, 50, 100]"
+      :page-size="state.take"
+      :previous-next="true" 
+      @pagechange="e => { state.take = e.take; state.skip = e.skip; refreshData(); }"
+    />
   </div>
 </template>
 
@@ -101,6 +102,7 @@ import { arrowRotateCwIcon, filterClearIcon, pauseIcon } from "@progress/kendo-s
 import { StackLayout } from "@progress/kendo-vue-layout";
 import { Button, ButtonGroup, Toolbar, ToolbarSpacer } from "@progress/kendo-vue-buttons";
 import { TreeList, TreeListHeaderSelectionChangeEvent } from '@progress/kendo-vue-treelist';
+import { Pager } from '@progress/kendo-vue-data-tools';
 import { SortDescriptor } from "@progress/kendo-data-query";
 import { TreeListColumnPropsT, getPdvFilters, mergeGridColumns } from "../components/grid";
 import { DataListOf, GridStateStore, PdvT } from "../global";
@@ -165,7 +167,7 @@ function refreshData() {
     }
     const config = {
         method: 'get',
-        url: '/_data/treelist.json',
+        url: '/Pdv',
         params: {
             skip: state.skip,
             count: state.take,
@@ -182,7 +184,7 @@ function refreshData() {
 function getGridTop(): number {
     const g = document.getElementById("pdv-grid");
     if (!g) return 260;
-    const computed = g.offsetTop + 11 /* app-content: margin-bottom */ + 2 /* grid border */;
+    const computed = g.offsetTop + 11 /* app-content: margin-bottom */ + 2 /* grid border */ + (g.children[1]?.clientHeight || 38) /* pager height */ + 2 /* pager border */;
     //console.log(`computed size: ${computed}`);
     return computed;
 }
