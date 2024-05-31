@@ -141,6 +141,7 @@ const DEFAULT_COLUMNS: TreeListColumnPropsT[] = [
 function foo(e: TreeListHeaderSelectionChangeEvent) {
     console.log(e, arguments);
     debugger;
+    alert(0);
 }
 </script>
 
