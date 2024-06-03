@@ -66,6 +66,9 @@
       :selected-field="SELECTED_FIELD"
       :expand-field="EXPAND_FIELD"
       :sub-items-field="SUB_ITEMS_FIELD"
+      :wrapper-style="{
+        overflow: 'auto',
+      }"
       @expandchange="$event.dataItem.expanded = !$event.dataItem.expanded"
       @headerselectionchange0="event => { debugger; data?.forEach((item) => item.selected = event.event.target.checked) }"
       @headerselectionchange="foo"
